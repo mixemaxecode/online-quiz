@@ -8,7 +8,7 @@ h1, h2 {
     text-align: center;
 }
 
-#participants-panel, #question-board, #name {
+#participants-panel, #question-board {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -79,3 +79,9 @@ button {
         background-color: #ccc; /* Farbe für deaktivierte Buttons */
         cursor: not-allowed; /* Hand-Cursor für nicht klickbare Buttons */
     }
+
+#name {
+    margin: 10px; /* Abstand um das Eingabefeld */
+    padding: 10px; /* Polsterung im Eingabefeld */
+    width: 200px; /* Breite des Eingabefelds */
+}
