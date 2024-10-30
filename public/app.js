@@ -5,16 +5,16 @@ let currentQuestionIndex = null; // Speichert die aktuelle Frage
 // Funktion, um zu ¸berpr¸fen, ob die Seite f¸r den Quizmaster ist
 const isQuizmaster = window.location.pathname.includes('quizmaster');
 
-// Registrierung
-document.getElementById('register').onclick = () => {
-    const name = document.getElementById('name').value;
-    if (name) {
-        ws.send(JSON.stringify({ type: 'register', name }));
-    }
-};
-
-// Buzzer-Funktion f¸r Teilnehmer
+// Registrierung (Nur f¸r Teilnehmer)
 if (!isQuizmaster) {
+    // Registrierungs-Logik bleibt f¸r Teilnehmer erhalten
+    document.getElementById('register').onclick = () => {
+        const name = document.getElementById('name').value;
+        if (name) {
+            ws.send(JSON.stringify({ type: 'register', name }));
+        }
+    };
+
     document.getElementById('buzzer').onclick = () => {
         ws.send(JSON.stringify({ type: 'buzzer' }));
     };
@@ -23,25 +23,19 @@ if (!isQuizmaster) {
 // Markiere die Antwort als richtig
 document.getElementById('markCorrect').onclick = () => {
     ws.send(JSON.stringify({ type: 'closeQuestion', correct: true }));
-    document.getElementById('markCorrect').style.display = 'none';
-    document.getElementById('markWrong').style.display = 'none';
-    document.getElementById('closeQuestion').style.display = 'none';
+    hideQuestionButtons();
 };
 
 // Markiere die Antwort als falsch
 document.getElementById('markWrong').onclick = () => {
     ws.send(JSON.stringify({ type: 'closeQuestion', correct: false }));
-    document.getElementById('markCorrect').style.display = 'none';
-    document.getElementById('markWrong').style.display = 'none';
-    document.getElementById('closeQuestion').style.display = 'none';
+    hideQuestionButtons();
 };
 
 // Schlieﬂe die Frage
 document.getElementById('closeQuestion').onclick = () => {
     ws.send(JSON.stringify({ type: 'closeQuestion', correct: null }));
-    document.getElementById('markCorrect').style.display = 'none';
-    document.getElementById('markWrong').style.display = 'none';
-    document.getElementById('closeQuestion').style.display = 'none';
+    hideQuestionButtons();
 };
 
 // WebSocket Nachrichten empfangen
@@ -82,6 +76,11 @@ ws.onmessage = (event) => {
         document.getElementById('question').innerText = data.question;
     }
 
+    if (data.type === 'question' && isQuizmaster) {
+        // Zeige die Buttons f¸r den Quizmaster an, wenn eine Frage aktiv ist
+        showQuestionButtons();
+    }
+
     if (data.type === 'buzzed') {
         if (isQuizmaster) {
             // Logs nur f¸r Quizmaster
@@ -96,6 +95,8 @@ ws.onmessage = (event) => {
             updateFastestParticipant(data.name);
         }
     }
+
+    
 
     // Hier neue Logik f¸r das Schlieﬂen der Frage
     if (data.type === 'questionClosed') {
@@ -120,6 +121,15 @@ function updateParticipantsPanel(participants) {
         participantDiv.className = 'participant';
         participantDiv.innerText = participant.name;
         participantDiv.id = `participant-${participant.name}`;
+
+        // Event-Listener f¸r Rechtsklick, um einen Teilnehmer zu entfernen
+        participantDiv.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            if (isQuizmaster) {
+                ws.send(JSON.stringify({ type: 'removeParticipant', name: participant.name }));
+            }
+        });
+
         participantsPanel.appendChild(participantDiv);
     });
 }
@@ -130,3 +140,20 @@ function updateFastestParticipant(name) {
         fastestDiv.classList.add('fastest');
     }
 }
+
+// Funktion, um die Buttons "Richtig", "Falsch" und "Frage schlieﬂen" auszublenden
+function hideQuestionButtons() {
+    document.getElementById('markCorrect').style.display = 'none';
+    document.getElementById('markWrong').style.display = 'none';
+    document.getElementById('closeQuestion').style.display = 'none';
+}
+
+// Funktion, um die Buttons sichtbar zu machen, wenn eine Frage ausgew‰hlt wurde
+function showQuestionButtons() {
+    document.getElementById('markCorrect').style.display = 'inline-block';
+    document.getElementById('markWrong').style.display = 'inline-block';
+    document.getElementById('closeQuestion').style.display = 'inline-block';
+}
+
+// Stelle sicher, dass die Buttons initial ausgeblendet sind
+hideQuestionButtons();

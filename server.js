@@ -32,14 +32,21 @@ wss.on('connection', (ws) => {
             broadcast({ type: 'buzzed', name: participant.name, timestamp });
         }
 
-        // Handling question close
+        // Entfernen eines Teilnehmers
+        if (data.type === 'removeParticipant') {
+            participants = participants.filter(p => p.name !== data.name);
+            broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
+        }
+
+        // Schließen der Frage
         if (data.type === 'closeQuestion') {
             if (data.correct !== null) {
-                // Handle correct/wrong answer logic
-                // (Hier kannst du die Punktevergabe und das Deaktivieren des Buzzers einfügen)
+                // Logik für richtige/falsche Antworten kann hier hinzugefügt werden
             }
-            broadcast({ type: 'questionClosed' }); // Sende an alle Clients
+            broadcast({ type: 'questionClosed' });
         }
+
+        
     });
 });
 
