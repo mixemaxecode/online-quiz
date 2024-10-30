@@ -74,9 +74,7 @@ ws.onmessage = (event) => {
                 questionCard.onclick = () => {
                     ws.send(JSON.stringify({ type: 'selectQuestion', index }));
                     currentQuestionIndex = index; // Setze die aktuelle Frage
-                    document.getElementById('markCorrect').style.display = 'inline'; // Zeige Buttons
-                    document.getElementById('markWrong').style.display = 'inline';
-                    document.getElementById('closeQuestion').style.display = 'inline';
+                    showQuestionButtons(); // Fragebuttons anzeigen
                 };
                 questionBoard.appendChild(questionCard);
             });
@@ -168,18 +166,14 @@ function updateFastestParticipant(name) {
     }
 }
 
-// Funktion, um die Buttons "Richtig", "Falsch" und "Frage schlieﬂen" auszublenden
-function hideQuestionButtons() {
-    document.getElementById('markCorrect').style.display = 'none';
-    document.getElementById('markWrong').style.display = 'none';
-    document.getElementById('closeQuestion').style.display = 'none';
+// Funktion, um die Buttons sichtbar zu machen
+function showQuestionButtons() {
+    document.getElementById('question-buttons').style.display = 'block'; // Buttons anzeigen
 }
 
-// Funktion, um die Buttons sichtbar zu machen, wenn eine Frage ausgew‰hlt wurde
-function showQuestionButtons() {
-    document.getElementById('markCorrect').style.display = 'inline-block';
-    document.getElementById('markWrong').style.display = 'inline-block';
-    document.getElementById('closeQuestion').style.display = 'inline-block';
+// Funktion, um die Buttons auszublenden
+function hideQuestionButtons() {
+    document.getElementById('question-buttons').style.display = 'none'; // Buttons ausblenden
 }
 
 // Stelle sicher, dass die Buttons initial ausgeblendet sind
