@@ -8,7 +8,7 @@ h1, h2 {
     text-align: center;
 }
 
-#participants-panel, #question-board {
+#participants-panel, #question-board, #name {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
