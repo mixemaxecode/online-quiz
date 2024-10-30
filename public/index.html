@@ -1,63 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Quiz Teilnehmer</title>
-    <style>
-        #question-board {
-            margin: 20px;
-        }
-
-        #question {
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            padding: 20px;
-            background-color: #f4f4f4;
-            border-radius: 8px;
-        }
-
-        .participant {
-            padding: 10px;
-            margin: 5px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .fastest {
-            background-color: lightgreen;
-        }
-
-        #participants-panel {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        #buzzer {
-            margin: 20px;
-            padding: 15px;
-            font-size: 18px;
-        }
-
-        #register-container {
-            text-align: center;
-            margin: 20px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teilnehmer - Quiz Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
 </head>
 <body>
-    <div id="register-container">
-        <input type="text" id="name" placeholder="Dein Name">
-        <button id="register">Registrieren</button>
-    </div>
+    <h1>Quiz Game - Teilnehmer</h1>
+    <input type="text" id="name" placeholder="Dein Name" />
+    <button id="register">Registrieren</button>
 
-    <div id="question-board">
-        <div id="question">Warte auf die Frage...</div>
-    </div>
-    <div id="participants-panel"></div>
-    <button id="buzzer" disabled>Buzzern</button>
-    <script src="app.js"></script>
+    <h2>Teilnehmer</h2>
+    <div id="participants-panel"></div> <!-- Panel für Teilnehmer -->
+
+    <h2>Frage</h2>
+    <div id="question"></div>
+
+    <button id="buzzer" disabled>Buzzer</button>
 </body>
 </html>
