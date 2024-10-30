@@ -2,6 +2,7 @@
 const ws = new WebSocket('ws://localhost:8080');
 let questions = [];
 let currentQuestionIndex = null; // Speichert die aktuelle Frage
+let isRegistered = false;
 
 // Funktion, um zu überprüfen, ob die Seite für den Quizmaster ist
 const isQuizmaster = window.location.pathname.includes('quizmaster');
@@ -52,8 +53,15 @@ if (isQuizmaster) {
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
 
+    if (data.type === 'alreadyRegistered') {
+        alert(`Der Name "${data.name}" ist bereits registriert.`);
+    }
+
     if (data.type === 'registered') {
         questions = data.questions;
+        isRegistered = true; // Setze den Status auf registriert
+        document.getElementById('name').style.display = 'none'; // Blende das Eingabefeld aus
+        document.getElementById('register').style.display = 'none';
 
         if (isQuizmaster) {
             // Fragen im Frageboard anzeigen
@@ -72,9 +80,15 @@ ws.onmessage = (event) => {
                 };
                 questionBoard.appendChild(questionCard);
             });
-        } else {
+        } else {      
+
             document.getElementById('buzzer').disabled = false; // Aktivieren des Buzzers für Teilnehmer
         }
+    }
+
+    if (isRegistered) {
+        document.getElementById('name').style.display = 'none'; // Blende das Eingabefeld aus
+        document.getElementById('register').style.display = 'none'; // Blende den Registrierungsbutton aus
     }
 
     if (data.type === 'participants') {

@@ -9,6 +9,7 @@ const wss = new WebSocket.Server({ server });
 app.use(express.static('public'));
 
 let participants = [];
+const registeredNames = new Set(); // Set zum Speichern der registrierten Namen
 let questions = ["Was ist die Hauptstadt von Deutschland?", "Wie viele Bundesländer hat Deutschland?", "Wer schrieb 'Faust'?"];
 
 wss.on('connection', (ws) => {
@@ -16,9 +17,14 @@ wss.on('connection', (ws) => {
         const data = JSON.parse(message);
 
         if (data.type === 'register') {
-            participants.push({ id: ws, name: data.name });
-            ws.send(JSON.stringify({ type: 'registered', questions }));
-            broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
+            if (!registeredNames.has(data.name)) { // Überprüfen, ob der Name bereits registriert ist
+                registeredNames.add(data.name); // Name hinzufügen
+                participants.push({ id: ws, name: data.name });
+                ws.send(JSON.stringify({ type: 'registered', questions }));
+                broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
+            } else {
+                ws.send(JSON.stringify({ type: 'alreadyRegistered', name: data.name })); // Rückmeldung, dass bereits registriert
+            }
         }
 
         if (data.type === 'selectQuestion') {
