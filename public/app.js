@@ -1,4 +1,4 @@
-const ws = new WebSocket('wss://dein-service-name.onrender.com'); // Ersetze mit deiner Render-URL
+const ws = new WebSocket('wss://online-quiz-sps0.onrender.com'); 
 let questions = [];
 
 // Funktion, um zu überprüfen, ob die Seite für den Quizmaster ist
