@@ -41,7 +41,7 @@ wss.on('connection', (ws) => {
         // Entfernen eines Teilnehmers
         if (data.type === 'removeParticipant') {
             participants = participants.filter(p => p.name !== data.name);
-            registeredNames = registeredNames.filter(name => name !== data.name);
+            registeredNames.delete(data.name); // Namen aus dem Set entfernen
             broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
         }
 
