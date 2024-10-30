@@ -2,6 +2,7 @@ const ws = new WebSocket('wss://online-quiz-sps0.onrender.com');
 let questions = [];
 let activeQuestion = false;
 let fastestParticipant = null;
+let incorrectBuzzers = new Set();
 
 const isQuizmaster = window.location.pathname.includes('quizmaster');
 
@@ -16,7 +17,8 @@ document.getElementById('register').onclick = () => {
 // Buzzer-Funktion für Teilnehmer
 if (!isQuizmaster) {
     document.getElementById('buzzer').onclick = () => {
-        if (activeQuestion) {
+        const name = document.getElementById('name').value;
+        if (activeQuestion && !incorrectBuzzers.has(name)) {
             ws.send(JSON.stringify({ type: 'buzzer' }));
         }
     };
@@ -44,6 +46,7 @@ ws.onmessage = (event) => {
             document.getElementById('question').innerText = data.question;
             activeQuestion = true;
         }
+        resetParticipantsPanel(); // Panels bei neuer Frage zurücksetzen
     }
 
     if (data.type === 'buzzed') {
@@ -57,6 +60,11 @@ ws.onmessage = (event) => {
     if (data.type === 'endQuestion') {
         resetParticipantsPanel();
         activeQuestion = false;
+        incorrectBuzzers.clear(); // Zurücksetzen der fehlerhaften Buzzers
+    }
+
+    if (data.type === 'incorrect') {
+        incorrectBuzzers.add(data.name); // Teilnehmer, die die Frage falsch beantwortet haben
     }
 };
 
@@ -80,7 +88,10 @@ function setupQuestionBoard() {
     };
 
     document.getElementById('wrong').onclick = () => {
-        ws.send(JSON.stringify({ type: 'wrongAnswer' }));
+        const fastest = fastestParticipant;
+        if (fastest) {
+            ws.send(JSON.stringify({ type: 'wrongAnswer', name: fastest }));
+        }
     };
 
     document.getElementById('close-question').onclick = () => {
@@ -105,6 +116,7 @@ function highlightFastestParticipant(name) {
     const fastestDiv = document.getElementById(`participant-${name}`);
     if (fastestDiv) {
         fastestDiv.classList.add('fastest');
+        fastestParticipant = name; // Speichern des schnellsten Teilnehmers
     }
 }
 
@@ -121,9 +133,11 @@ function resetParticipantsPanel() {
     participantsPanel.querySelectorAll('.participant').forEach((div) => {
         div.classList.remove('fastest');
     });
+    fastestParticipant = null;
 }
 
 function endActiveQuestion() {
     activeQuestion = false;
     document.getElementById('controls').style.display = 'none';
+    ws.send(JSON.stringify({ type: 'endQuestion' }));
 }
