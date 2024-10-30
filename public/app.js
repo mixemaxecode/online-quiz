@@ -1,4 +1,4 @@
-const ws = new WebSocket('wss://your-websocket-url'); // Ersetze mit deiner WebSocket-URL
+const ws = new WebSocket('wss://online-quiz-sps0.onrender.com'); // Ersetze mit deiner WebSocket-URL
 let questions = [];
 let currentQuestionIndex = null; // Speichert die aktuelle Frage
 
