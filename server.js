@@ -14,7 +14,7 @@ let activeQuestionIndex = null;
 let buzzedParticipants = [];
 let activeBuzzer = false;
 
-server.on('connection', (ws) => {
+wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         const data = JSON.parse(message);
 
