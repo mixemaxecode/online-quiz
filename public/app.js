@@ -1,4 +1,4 @@
-const ws = new WebSocket('wss://online-quiz-sps0.onrender.com');
+const ws = new WebSocket('wss://dein-service-name.onrender.com'); // Ersetze mit deiner Render-URL
 let questions = [];
 
 // Registrierung
@@ -33,8 +33,10 @@ ws.onmessage = (event) => {
                 };
                 questionList.appendChild(li);
             });
-            document.getElementById('select-question').disabled = false;
+            document.getElementById('select-question').disabled = false; // Aktivieren des Frage-Buttons
         }
+
+        document.getElementById('buzzer').disabled = false; // Aktivieren des Buzzer-Buttons
     }
 
     if (data.type === 'question') {
