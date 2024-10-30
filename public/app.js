@@ -136,7 +136,10 @@ function updateParticipantsPanel(participants) {
         participantDiv.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             if (isQuizmaster) {
-                ws.send(JSON.stringify({ type: 'removeParticipant', name: participant.name }));
+                const confirmation = confirm(`Benutzer "${participant.name}" wirklich entfernen?`);
+                if (confirmation) {
+                    ws.send(JSON.stringify({ type: 'removeParticipant', name: participant.name }));
+                }
             }
         });
 
