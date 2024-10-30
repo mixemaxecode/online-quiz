@@ -1,7 +1,8 @@
-const ws = new WebSocket('wss://online-quiz-sps0.onrender.com'); 
+const ws = new WebSocket('wss://online-quiz-sps0.onrender.com');
 let questions = [];
+let activeQuestion = false;
+let fastestParticipant = null;
 
-// Funktion, um zu überprüfen, ob die Seite für den Quizmaster ist
 const isQuizmaster = window.location.pathname.includes('quizmaster');
 
 // Registrierung
@@ -15,7 +16,9 @@ document.getElementById('register').onclick = () => {
 // Buzzer-Funktion für Teilnehmer
 if (!isQuizmaster) {
     document.getElementById('buzzer').onclick = () => {
-        ws.send(JSON.stringify({ type: 'buzzer' }));
+        if (activeQuestion) {
+            ws.send(JSON.stringify({ type: 'buzzer' }));
+        }
     };
 }
 
@@ -25,23 +28,10 @@ ws.onmessage = (event) => {
 
     if (data.type === 'registered') {
         questions = data.questions;
-
         if (isQuizmaster) {
-            // Fragen im Frageboard anzeigen
-            const questionBoard = document.getElementById('question-board');
-            questionBoard.innerHTML = '';
-            questions.forEach((question, index) => {
-                const questionCard = document.createElement('div');
-                questionCard.className = 'question-card';
-                questionCard.innerText = question;
-                questionCard.onclick = () => {
-                    ws.send(JSON.stringify({ type: 'selectQuestion', index }));
-                };
-                questionCard.disabled = false; // Aktivieren der Fragekarten
-                questionBoard.appendChild(questionCard);
-            });
+            setupQuestionBoard();
         } else {
-            document.getElementById('buzzer').disabled = false; // Aktivieren des Buzzers für Teilnehmer
+            document.getElementById('buzzer').disabled = false;
         }
     }
 
@@ -49,26 +39,55 @@ ws.onmessage = (event) => {
         updateParticipantsPanel(data.participants);
     }
 
-    if (data.type === 'question' && !isQuizmaster) {
-        // Teilnehmer sehen die freigegebene Frage
-        document.getElementById('question').innerText = data.question;
+    if (data.type === 'question') {
+        if (!isQuizmaster) {
+            document.getElementById('question').innerText = data.question;
+            activeQuestion = true;
+        }
     }
 
     if (data.type === 'buzzed') {
         if (isQuizmaster) {
-            // Logs nur für Quizmaster
-            const logPanel = document.getElementById('log-panel');
-            const now = Date.now();
-            const delay = now - data.timestamp;
-            const participantInfo = `${data.name} hat gebuzzert! (${delay} ms Verzögerung)`;
-            logPanel.innerText += `${participantInfo}\n`;
-            updateFastestParticipant(data.name);
+            logBuzzed(data.name, data.timestamp);
         } else {
-            // Teilnehmer-Panel aktualisieren
-            updateFastestParticipant(data.name);
+            highlightFastestParticipant(data.name);
         }
     }
+
+    if (data.type === 'endQuestion') {
+        resetParticipantsPanel();
+        activeQuestion = false;
+    }
 };
+
+function setupQuestionBoard() {
+    const questionBoard = document.getElementById('question-board');
+    questionBoard.innerHTML = '';
+    questions.forEach((question, index) => {
+        const questionCard = document.createElement('div');
+        questionCard.className = 'question-card';
+        questionCard.innerText = question;
+        questionCard.onclick = () => {
+            ws.send(JSON.stringify({ type: 'selectQuestion', index }));
+            document.getElementById('controls').style.display = 'block';
+        };
+        questionBoard.appendChild(questionCard);
+    });
+
+    document.getElementById('correct').onclick = () => {
+        ws.send(JSON.stringify({ type: 'correctAnswer' }));
+        endActiveQuestion();
+    };
+
+    document.getElementById('wrong').onclick = () => {
+        ws.send(JSON.stringify({ type: 'wrongAnswer' }));
+    };
+
+    document.getElementById('close-question').onclick = () => {
+        ws.send(JSON.stringify({ type: 'closeQuestion' }));
+        endActiveQuestion();
+    };
+}
 
 function updateParticipantsPanel(participants) {
     const participantsPanel = document.getElementById('participants-panel');
@@ -82,9 +101,29 @@ function updateParticipantsPanel(participants) {
     });
 }
 
-function updateFastestParticipant(name) {
+function highlightFastestParticipant(name) {
     const fastestDiv = document.getElementById(`participant-${name}`);
     if (fastestDiv) {
         fastestDiv.classList.add('fastest');
     }
+}
+
+function logBuzzed(name, timestamp) {
+    const logPanel = document.getElementById('log-panel');
+    const now = Date.now();
+    const delay = now - timestamp;
+    logPanel.innerText += `${name} hat gebuzzert! (${delay} ms Verzögerung)\n`;
+    highlightFastestParticipant(name);
+}
+
+function resetParticipantsPanel() {
+    const participantsPanel = document.getElementById('participants-panel');
+    participantsPanel.querySelectorAll('.participant').forEach((div) => {
+        div.classList.remove('fastest');
+    });
+}
+
+function endActiveQuestion() {
+    activeQuestion = false;
+    document.getElementById('controls').style.display = 'none';
 }
