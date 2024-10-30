@@ -23,20 +23,26 @@ if (!isQuizmaster) {
 
 // Markiere die Antwort als richtig
 document.getElementById('markCorrect').onclick = () => {
-    ws.send(JSON.stringify({ type: 'closeQuestion', correct: true }));
-    hideQuestionButtons();
+    if (document.getElementById('markCorrect').style.display !== 'none') {
+        ws.send(JSON.stringify({ type: 'closeQuestion', correct: true }));
+        hideQuestionButtons();
+    }
 };
 
 // Markiere die Antwort als falsch
 document.getElementById('markWrong').onclick = () => {
-    ws.send(JSON.stringify({ type: 'closeQuestion', correct: false }));
-    hideQuestionButtons();
+    if (document.getElementById('markWrong').style.display !== 'none') {
+        ws.send(JSON.stringify({ type: 'closeQuestion', correct: false }));
+        hideQuestionButtons();
+    }
 };
 
 // Schließe die Frage
 document.getElementById('closeQuestion').onclick = () => {
-    ws.send(JSON.stringify({ type: 'closeQuestion', correct: null }));
-    hideQuestionButtons();
+    if (document.getElementById('closeQuestion').style.display !== 'none') {
+        ws.send(JSON.stringify({ type: 'closeQuestion', correct: null }));
+        hideQuestionButtons();
+    }
 };
 
 // WebSocket Nachrichten empfangen
