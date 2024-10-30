@@ -21,29 +21,32 @@ if (!isQuizmaster) {
     };
 }
 
-// Markiere die Antwort als richtig
-document.getElementById('markCorrect').onclick = () => {
-    if (document.getElementById('markCorrect').style.display !== 'none') {
-        ws.send(JSON.stringify({ type: 'closeQuestion', correct: true }));
-        hideQuestionButtons();
-    }
-};
+// Überprüfe, ob der Benutzer der Quizmaster ist, bevor die Events gesetzt werden
+if (isQuizmaster) {
+    // Markiere die Antwort als richtig
+    document.getElementById('markCorrect').onclick = () => {
+        if (document.getElementById('markCorrect').style.display !== 'none') {
+            ws.send(JSON.stringify({ type: 'closeQuestion', correct: true }));
+            hideQuestionButtons();
+        }
+    };
 
-// Markiere die Antwort als falsch
-document.getElementById('markWrong').onclick = () => {
-    if (document.getElementById('markWrong').style.display !== 'none') {
-        ws.send(JSON.stringify({ type: 'closeQuestion', correct: false }));
-        hideQuestionButtons();
-    }
-};
+    // Markiere die Antwort als falsch
+    document.getElementById('markWrong').onclick = () => {
+        if (document.getElementById('markWrong').style.display !== 'none') {
+            ws.send(JSON.stringify({ type: 'closeQuestion', correct: false }));
+            hideQuestionButtons();
+        }
+    };
 
-// Schließe die Frage
-document.getElementById('closeQuestion').onclick = () => {
-    if (document.getElementById('closeQuestion').style.display !== 'none') {
-        ws.send(JSON.stringify({ type: 'closeQuestion', correct: null }));
-        hideQuestionButtons();
-    }
-};
+    // Schließe die Frage
+    document.getElementById('closeQuestion').onclick = () => {
+        if (document.getElementById('closeQuestion').style.display !== 'none') {
+            ws.send(JSON.stringify({ type: 'closeQuestion', correct: null }));
+            hideQuestionButtons();
+        }
+    };
+}
 
 // WebSocket Nachrichten empfangen
 ws.onmessage = (event) => {
