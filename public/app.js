@@ -1,5 +1,8 @@
-const ws = new WebSocket('wss://online-quiz-sps0.onrender.com'); // Ersetze mit deiner Render-URLhttps://online-quiz-sps0.onrender.com
+const ws = new WebSocket('wss://dein-service-name.onrender.com'); // Ersetze mit deiner Render-URL
 let questions = [];
+
+// Funktion, um zu überprüfen, ob die Seite für den Quizmaster ist
+const isQuizmaster = window.location.pathname.includes('quizmaster');
 
 // Registrierung
 document.getElementById('register').onclick = () => {
@@ -9,10 +12,12 @@ document.getElementById('register').onclick = () => {
     }
 };
 
-// Buzzer
-document.getElementById('buzzer').onclick = () => {
-    ws.send(JSON.stringify({ type: 'buzzer' }));
-};
+// Buzzer-Funktion für Teilnehmer
+if (!isQuizmaster) {
+    document.getElementById('buzzer').onclick = () => {
+        ws.send(JSON.stringify({ type: 'buzzer' }));
+    };
+}
 
 // WebSocket Nachrichten empfangen
 ws.onmessage = (event) => {
@@ -21,32 +26,65 @@ ws.onmessage = (event) => {
     if (data.type === 'registered') {
         questions = data.questions;
 
-        // Quizmaster-spezifische Logik
-        if (document.getElementById('select-question')) {
-            const questionList = document.getElementById('question-list');
-            questionList.innerHTML = ''; // Vorherige Fragen löschen
+        if (isQuizmaster) {
+            // Fragen im Frageboard anzeigen
+            const questionBoard = document.getElementById('question-board');
+            questionBoard.innerHTML = '';
             questions.forEach((question, index) => {
-                const li = document.createElement('li');
-                li.innerText = question;
-                li.onclick = () => {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                questionCard.innerText = question;
+                questionCard.onclick = () => {
                     ws.send(JSON.stringify({ type: 'selectQuestion', index }));
                 };
-                questionList.appendChild(li);
+                questionCard.disabled = false; // Aktivieren der Fragekarten
+                questionBoard.appendChild(questionCard);
             });
-            document.getElementById('select-question').disabled = false; // Aktivieren des Frage-Buttons
+        } else {
+            document.getElementById('buzzer').disabled = false; // Aktivieren des Buzzers für Teilnehmer
         }
-
-        document.getElementById('buzzer').disabled = false; // Aktivieren des Buzzer-Buttons
     }
 
-    if (data.type === 'question') {
+    if (data.type === 'participants') {
+        updateParticipantsPanel(data.participants);
+    }
+
+    if (data.type === 'question' && !isQuizmaster) {
+        // Teilnehmer sehen die freigegebene Frage
         document.getElementById('question').innerText = data.question;
     }
 
     if (data.type === 'buzzed') {
-        const now = Date.now();
-        const delay = now - data.timestamp;
-        const participantInfo = `${data.name} hat gebuzzert! (${delay} ms Verzögerung)`;
-        document.getElementById('buzzed-info').innerText += `${participantInfo}\n`;
+        if (isQuizmaster) {
+            // Logs nur für Quizmaster
+            const logPanel = document.getElementById('log-panel');
+            const now = Date.now();
+            const delay = now - data.timestamp;
+            const participantInfo = `${data.name} hat gebuzzert! (${delay} ms Verzögerung)`;
+            logPanel.innerText += `${participantInfo}\n`;
+            updateFastestParticipant(data.name);
+        } else {
+            // Teilnehmer-Panel aktualisieren
+            updateFastestParticipant(data.name);
+        }
     }
 };
+
+function updateParticipantsPanel(participants) {
+    const participantsPanel = document.getElementById('participants-panel');
+    participantsPanel.innerHTML = '';
+    participants.forEach((participant) => {
+        const participantDiv = document.createElement('div');
+        participantDiv.className = 'participant';
+        participantDiv.innerText = participant.name;
+        participantDiv.id = `participant-${participant.name}`;
+        participantsPanel.appendChild(participantDiv);
+    });
+}
+
+function updateFastestParticipant(name) {
+    const fastestDiv = document.getElementById(`participant-${name}`);
+    if (fastestDiv) {
+        fastestDiv.classList.add('fastest');
+    }
+}

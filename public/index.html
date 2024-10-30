@@ -4,14 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teilnehmer - Quiz Game</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="app.js" defer></script>
 </head>
 <body>
     <h1>Quiz Game - Teilnehmer</h1>
     <input type="text" id="name" placeholder="Dein Name" />
     <button id="register">Registrieren</button>
-    <h2 id="question"></h2>
-    <button id="buzzer" disabled>Buzzer!</button>
-    <div id="buzzed-info"></div>
+
+    <h2>Teilnehmer</h2>
+    <div id="participants-panel"></div> <!-- Panel für Teilnehmer -->
+
+    <h2>Frage</h2>
+    <div id="question"></div>
+
+    <button id="buzzer" disabled>Buzzer</button>
 </body>
 </html>

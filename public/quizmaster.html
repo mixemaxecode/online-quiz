@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quizmaster - Quiz Game</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="app.js" defer></script>
 </head>
 <body>
     <h1>Quiz Game - Quizmaster</h1>
     <input type="text" id="name" placeholder="Dein Name" />
     <button id="register">Registrieren</button>
+
+    <h2>Teilnehmer</h2>
+    <div id="participants-panel"></div> <!-- Panel für Teilnehmer -->
+
     <h2>Fragen</h2>
-    <ul id="question-list"></ul>
-    <button id="select-question" disabled>Frage auswählen</button>
-    <div id="buzzed-info"></div>
-    <button id="buzzer" disabled>Buzzer</button> <!-- Buzzer-Button hier -->
+    <div id="question-board"></div> <!-- Panel für Fragen -->
+
+    <div id="log-panel" class="log-panel"></div> <!-- Panel für Logs im unteren Viertel -->
 </body>
 </html>
