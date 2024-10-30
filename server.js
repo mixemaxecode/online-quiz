@@ -1,5 +1,12 @@
+const express = require('express');
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8080 });
+const http = require('http');
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+app.use(express.static('public'));
 
 let participants = [];
 let questions = ["Was ist die Hauptstadt von Deutschland?", "Wie viele Bundesländer hat Deutschland?", "Wer schrieb 'Faust'?"];
@@ -34,3 +41,9 @@ function broadcast(message) {
         }
     });
 }
+
+const PORT = process.env.PORT || 8080;
+
+server.listen(PORT, () => {
+    console.log(`Server läuft auf Port ${PORT}`);
+});
