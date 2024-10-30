@@ -1,0 +1,68 @@
+<!-- quizmaster.html -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Quizmaster</title>
+    <style>
+        #questions {
+            margin-bottom: 20px;
+        }
+
+            #questions button {
+                display: block;
+                margin: 5px 0;
+                padding: 10px;
+                font-size: 18px;
+            }
+
+        #buzzers {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="questions">
+        <button data-question="Frage 1: Was ist die Hauptstadt von Frankreich?">Frage 1</button>
+        <button data-question="Frage 2: Wer schrieb 'Die Verwandlung'?">Frage 2</button>
+        <button data-question="Frage 3: Wie viele Planeten hat unser Sonnensystem?">Frage 3</button>
+    </div>
+    <div id="buzzers">
+        <h3>Buzzers:</h3>
+        <div id="buzzer-info">Kein Teilnehmer hat gebuzzert.</div>
+    </div>
+
+    <script>
+        const questions = document.getElementById('questions');
+        const buzzerInfo = document.getElementById('buzzer-info');
+        let firstBuzz = null;
+        const ws = new WebSocket('ws://localhost:8080'); // WebSocket-Verbindung
+
+        questions.addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON') {
+                const question = event.target.getAttribute('data-question');
+                ws.send(JSON.stringify({ type: 'new-question', question }));
+                firstBuzz = null;
+                buzzerInfo.textContent = "Warten auf Buzzers...";
+            }
+        });
+
+        // WebSocket Nachricht empfangen
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.type === 'buzz') {
+                if (!firstBuzz) {
+                    firstBuzz = data.time;
+                    buzzerInfo.textContent = `Erster Buzz um ${new Date(firstBuzz).toLocaleTimeString()}`;
+                    ws.send(JSON.stringify({ type: 'buzz-result', message: "Du warst der Erste!" }));
+                } else {
+                    const delay = (data.time - firstBuzz) / 1000;
+                    buzzerInfo.textContent += `, N�chster Buzz: ${delay} Sekunden sp�ter`;
+                    ws.send(JSON.stringify({ type: 'buzz-result', message: `Du warst ${delay} Sekunden zu sp�t.` }));
+                }
+            }
+        };
+    </script>
+</body>
+</html>
