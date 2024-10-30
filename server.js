@@ -31,6 +31,15 @@ wss.on('connection', (ws) => {
             const participant = participants.find(p => p.id === ws);
             broadcast({ type: 'buzzed', name: participant.name, timestamp });
         }
+
+        // Handling question close
+        if (data.type === 'closeQuestion') {
+            if (data.correct !== null) {
+                // Handle correct/wrong answer logic
+                // (Hier kannst du die Punktevergabe und das Deaktivieren des Buzzers einfügen)
+            }
+            broadcast({ type: 'questionClosed' }); // Sende an alle Clients
+        }
     });
 });
 
