@@ -1,4 +1,4 @@
-const ws = new WebSocket('wss://dein-service-name.onrender.com'); // Ersetze mit deiner Render-URL
+const ws = new WebSocket('wss://online-quiz-sps0.onrender.com'); // Ersetze mit deiner Render-URLhttps://online-quiz-sps0.onrender.com
 let questions = [];
 
 // Registrierung
