@@ -20,8 +20,20 @@ ws.onmessage = (event) => {
 
     if (data.type === 'registered') {
         questions = data.questions;
-        if (document.getElementById('buzzer')) {
-            document.getElementById('buzzer').disabled = false;
+
+        // Quizmaster-spezifische Logik
+        if (document.getElementById('select-question')) {
+            const questionList = document.getElementById('question-list');
+            questionList.innerHTML = ''; // Vorherige Fragen löschen
+            questions.forEach((question, index) => {
+                const li = document.createElement('li');
+                li.innerText = question;
+                li.onclick = () => {
+                    ws.send(JSON.stringify({ type: 'selectQuestion', index }));
+                };
+                questionList.appendChild(li);
+            });
+            document.getElementById('select-question').disabled = false;
         }
     }
 
@@ -36,18 +48,3 @@ ws.onmessage = (event) => {
         document.getElementById('buzzed-info').innerText += `${participantInfo}\n`;
     }
 };
-
-// Quizmaster-spezifische Logik
-if (document.getElementById('select-question')) {
-    isQuizmaster = true;
-
-    // Fragen auflisten
-    questions.forEach((question, index) => {
-        const li = document.createElement('li');
-        li.innerText = question;
-        li.onclick = () => {
-            ws.send(JSON.stringify({ type: 'selectQuestion', index }));
-        };
-        document.getElementById('question-list').appendChild(li);
-    });
-}
