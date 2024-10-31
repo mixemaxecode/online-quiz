@@ -27,6 +27,10 @@ wss.on('connection', (ws) => {
             }
         }
 
+        if (data.type === 'registered') {
+            ws.send(JSON.stringify({ type: 'registered', questions }));
+        }
+
         // Übernahme-Anfrage
         if (data.type === 'requestTakeOver') {
             // Nachricht an den Quizmaster zur Bestätigung der Übernahme
@@ -35,10 +39,8 @@ wss.on('connection', (ws) => {
 
         // Quizmaster bestätigt oder lehnt die Übernahme ab
         if (data.type === 'takeOverResponse') {
-            const targetParticipant = participants.find(p => p.name === data.name);
 
-            if (data.allow) { // Falls Übernahme erlaubt
-                participants = participants.filter(p => p.name !== data.name);                
+            if (data.allow) { // Falls Übernahme erlaubt                              
                 ws.send(JSON.stringify({ type: 'takeOverConfirmed' }));
             } else {
                 ws.send(JSON.stringify({ type: 'takeOverDenied' }));

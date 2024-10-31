@@ -66,7 +66,7 @@ ws.onmessage = (event) => {
         // Falls Übernahme bestätigt wurde
         if (data.type === 'takeOverConfirmed') {
             alert("Übernahme des Namens wurde vom Quizmaster bestätigt!");
-            ws.send(JSON.stringify({ type: 'register', name: attemptedName }));
+            ws.send(JSON.stringify({ type: 'registered' }));
         }
 
         if (data.type === 'takeOverDenied') {
