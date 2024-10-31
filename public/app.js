@@ -76,8 +76,8 @@ ws.onmessage = (event) => {
     }
 
     if (data.type === 'confirmTakeOver' && isQuizmaster) {
-        const confirmTakeOver = confirm(`Darf Spieler "${data.name}" übernommen werden?`);
-        ws.send(JSON.stringify({ type: 'takeOverResponse', name: data.name, allow: confirmTakeOver }));
+        const confirmTakeOver = confirm(`Darf Spieler "${data.name}" von "${data.id}" übernommen werden?`);
+        ws.send(JSON.stringify({ type: 'takeOverResponse', name: data.name, id:data.id, allow: confirmTakeOver }));
     }
 
     if (data.type === 'registered') {

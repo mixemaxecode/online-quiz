@@ -1,3 +1,2 @@
 d:
-cd D:\Entwicklung\online-quiz
-npm start
+cd D:\Entwicklung\online-quiz & npm start
