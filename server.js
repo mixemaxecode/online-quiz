@@ -46,14 +46,14 @@ wss.on('connection', (ws) => {
         // Quizmaster bestätigt oder lehnt die Übernahme ab
         if (data.type === 'takeOverResponse') {
             if (data.allow) { // Falls Übernahme erlaubt                              
-                broadcast({ type: 'takeOverConfirmed', name: data.name, id: data.id });
+                const newClient = [...wss.clients].find(client => client.id === data.id);
+                newClient.send(JSON.stringify({ type: 'takeOverConfirmed', name: data.name, id: data.id }));
                 const participant = participants.find(p => p.name === data.name);
                 const oldSocketId = participant.id; // Alte ID speichern
                 participant.id = data.id;
 
                 // Benachrichtige den alten Client, dass er abgemeldet wird
-                const oldClient = [...wss.clients].find(client => client.id === oldSocketId);
-                console.log(`oldClient`);
+                const oldClient = [...wss.clients].find(client => client.id === oldSocketId);                
                 if (oldClient && oldClient.readyState === WebSocket.OPEN) {
                     oldClient.send(JSON.stringify({ type: 'forceLogout' }));
                 }
