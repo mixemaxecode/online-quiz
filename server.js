@@ -56,7 +56,6 @@ wss.on('connection', (ws) => {
                 console.log(`oldClient`);
                 if (oldClient && oldClient.readyState === WebSocket.OPEN) {
                     oldClient.send(JSON.stringify({ type: 'forceLogout' }));
-                    console.log(`forceLogout`);
                 }
 
             } else {

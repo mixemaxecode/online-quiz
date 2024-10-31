@@ -80,14 +80,15 @@ ws.onmessage = (event) => {
             alert("Übernahme des Namens wurde vom Quizmaster abgelehnt.");
         }
 
-        if (data.type === 'forceLogout') {
-            alert("Sie wurden abgemeldet, da ein anderer Client Ihren Namen übernommen hat.");
+        if (data.type === 'forceLogout') {            
             isRegistered = false;
 
             // UI-Elemente aktualisieren, damit der Benutzer sich erneut registrieren kann
             document.getElementById('name').style.display = 'block';
             document.getElementById('register').style.display = 'block';
             document.getElementById('buzzer').disabled = true;
+
+            alert("Sie wurden abgemeldet, da ein anderer Client Ihren Namen übernommen hat.");
         }
 
     }
