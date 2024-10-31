@@ -43,12 +43,12 @@ wss.on('connection', (ws) => {
         if (data.type === 'takeOverResponse') {
             if (data.allow) { // Falls Übernahme erlaubt                              
                 broadcast({ type: 'takeOverConfirmed', name: data.name, id: data.id });
-                participants.find(p => p.name === name).id = data.id;
+                participants.find(p => p.name === data.name).id = data.id;
                 console.log(`confirmed`);
             } else {
                 broadcast({ type: 'takeOverDenied', name: data.name, id: data.id });
             }
-            broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
+            broadcast({ type: 'participants', participants: participants.map(p => ({ data.name: p.name })) });
         }
 
         if (data.type === 'selectQuestion') {
