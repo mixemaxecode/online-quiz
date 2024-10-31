@@ -153,7 +153,10 @@ ws.onmessage = (event) => {
     // Hier neue Logik für das Schließen der Frage
     if (data.type === 'questionClosed') {
         currentQuestionIndex = null; // Zurücksetzen der aktuellen Frage
-        document.getElementById('question').innerText = ''; // Frage zurücksetzen für Teilnehmer
+        const questionElement = document.getElementById('question');
+        if (questionElement) {
+            questionElement.innerText = ''; // Frage zurücksetzen für Teilnehmer
+        }
         resetParticipantsPanel(); // Reset der Teilnehmer-Panels
     }
 };
