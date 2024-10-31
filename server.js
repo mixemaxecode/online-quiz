@@ -29,6 +29,7 @@ wss.on('connection', (ws) => {
 
         if (data.type === 'registered') {
             ws.send(JSON.stringify({ type: 'registered', questions }));
+            console.log(`registered`);
         }
 
         // Übernahme-Anfrage
