@@ -73,8 +73,14 @@ wss.on('connection', (ws) => {
 
         if (data.type === 'buzzer') {
             const timestamp = Date.now();
+            const date = new Date(timestamp);
+            const formattedTime = date.toLocaleTimeString('de-DE', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            }) + '.' + date.getMilliseconds().toString().padStart(3, '0');
             const participant = participants.find(p => p.id === socketId);
-            broadcast({ type: 'buzzed', name: participant.name, timestamp });
+            broadcast({ type: 'buzzed', name: participant.name, formattedTime });
         }
 
         // Entfernen eines Teilnehmers
