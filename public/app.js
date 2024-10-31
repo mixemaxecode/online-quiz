@@ -130,9 +130,7 @@ ws.onmessage = (event) => {
         if (isQuizmaster) {
             // Logs nur für Quizmaster
             const logPanel = document.getElementById('log-panel');
-            const now = Date.now();
-            const delay = now - data.timestamp;
-            const participantInfo = `${data.name} hat gebuzzert! (${delay} ms Verzögerung)`;
+            const participantInfo = `${data.name} hat gebuzzert! (${data.timestamp})`;
             logPanel.innerText += `${participantInfo}\n`;
             updateFastestParticipant(data.name);
         } else {

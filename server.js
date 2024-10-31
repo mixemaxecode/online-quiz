@@ -1,6 +1,7 @@
 const express = require('express');
 const WebSocket = require('ws');
 const http = require('http');
+const { v4: uuidv4 } = require('uuid'); // UUID für eindeutige IDs
 
 const app = express();
 const server = http.createServer(app);
@@ -13,13 +14,15 @@ const registeredNames = new Set(); // Set zum Speichern der registrierten Namen
 let questions = ["Was ist die Hauptstadt von Deutschland?", "Wie viele Bundesländer hat Deutschland?", "Wer schrieb 'Faust'?"];
 
 wss.on('connection', (ws) => {
+    const socketId = uuidv4();
+
     ws.on('message', (message) => {
         const data = JSON.parse(message);
 
         if (data.type === 'register') {
             if (!registeredNames.has(data.name)) { // Überprüfen, ob der Name bereits registriert ist
                 registeredNames.add(data.name); // Name hinzufügen
-                participants.push({ id: ws, name: data.name });
+                participants.push({ id: socketid, name: data.name });
                 ws.send(JSON.stringify({ type: 'registered', questions }));
                 broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
             } else {
@@ -35,7 +38,7 @@ wss.on('connection', (ws) => {
         // Übernahme-Anfrage
         if (data.type === 'requestTakeOver') {
             // Nachricht an den Quizmaster zur Bestätigung der Übernahme
-            broadcast({ type: 'confirmTakeOver', name: data.name, id:ws });
+            broadcast({ type: 'confirmTakeOver', name: data.name, id: socketid });
         }
 
         // Quizmaster bestätigt oder lehnt die Übernahme ab
@@ -43,7 +46,7 @@ wss.on('connection', (ws) => {
             if (data.allow) { // Falls Übernahme erlaubt                              
                 broadcast({ type: 'takeOverConfirmed', name: data.name, id: data.id });
                 const participant = participants.find(p => p.name === data.name);
-                //participant.id = data.id;
+                participant.id = data.id;
                 console.log(`confirmed particpant.id: "${data.id}"`);
             } else {
                 broadcast({ type: 'takeOverDenied', name: data.name, id: data.id });
