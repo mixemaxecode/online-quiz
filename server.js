@@ -41,10 +41,10 @@ wss.on('connection', (ws) => {
         // Quizmaster bestätigt oder lehnt die Übernahme ab
         if (data.type === 'takeOverResponse') {
             if (data.allow) { // Falls Übernahme erlaubt                              
-                ws.send(JSON.stringify({ type: 'takeOverConfirmed' }));
+                broadcast({ type: 'takeOverConfirmed' });
                 console.log(`confirmed`);
             } else {
-                ws.send(JSON.stringify({ type: 'takeOverDenied' }));
+                broadcast({ type: 'takeOverDenied' });
             }
             //broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
         }
