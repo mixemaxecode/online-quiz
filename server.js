@@ -28,7 +28,6 @@ wss.on('connection', (ws) => {
         }
 
         if (data.type === 'registered') {
-
             ws.send(JSON.stringify({ type: 'registered', questions }));
             console.log(`registered`);
         }
@@ -44,7 +43,7 @@ wss.on('connection', (ws) => {
             if (data.allow) { // Falls Übernahme erlaubt                              
                 broadcast({ type: 'takeOverConfirmed', name: data.name, id: data.id });
                 const participant = participants.find(p => p.name === data.name);
-                participant.id = data.id;
+                //participant.id = data.id;
                 console.log(`confirmed particpant.id: "${data.id}"`);
             } else {
                 broadcast({ type: 'takeOverDenied', name: data.name, id: data.id });
