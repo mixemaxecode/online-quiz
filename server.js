@@ -42,6 +42,7 @@ wss.on('connection', (ws) => {
         if (data.type === 'takeOverResponse') {
             if (data.allow) { // Falls Übernahme erlaubt                              
                 ws.send(JSON.stringify({ type: 'takeOverConfirmed' }));
+                console.log(`confirmed`);
             } else {
                 ws.send(JSON.stringify({ type: 'takeOverDenied' }));
             }
