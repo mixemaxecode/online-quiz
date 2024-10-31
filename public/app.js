@@ -73,7 +73,6 @@ ws.onmessage = (event) => {
         if (data.type === 'takeOverConfirmed') {
             alert("Übernahme des Namens wurde vom Quizmaster bestätigt!");
             ws.send(JSON.stringify({ type: 'registered' }));
-            logPanel.innerText += `confirmed\n`;
         }
 
         if (data.type === 'takeOverDenied') {
@@ -173,6 +172,8 @@ function displayQuestions() {
             ws.send(JSON.stringify({ type: 'selectQuestion', index }));
             currentQuestionIndex = index; // Setze die aktuelle Frage
             showQuestionButtons(); // Fragebuttons anzeigen
+            const logPanel = document.getElementById('log-panel');
+            logPanel.innerText += `${question}\n`
         };
         questionBoard.appendChild(questionCard);
     });
