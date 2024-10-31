@@ -43,8 +43,9 @@ wss.on('connection', (ws) => {
         if (data.type === 'takeOverResponse') {
             if (data.allow) { // Falls Übernahme erlaubt                              
                 broadcast({ type: 'takeOverConfirmed', name: data.name, id: data.id });
-                participants.find(p => p.name === data.name).id = data.id;
-                console.log(`confirmed`);
+                const participant = participants.find(p => p.name === data.name);
+                participant.id = data.id;
+                console.log(`confirmed particpant.id: "${data.id}"`);
             } else {
                 broadcast({ type: 'takeOverDenied', name: data.name, id: data.id });
             }
