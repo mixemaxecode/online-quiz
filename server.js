@@ -51,8 +51,10 @@ wss.on('connection', (ws) => {
 
                 // Benachrichtige den alten Client, dass er abgemeldet wird
                 const oldClient = [...wss.clients].find(client => client.id === oldSocketId);
+                console.log(`oldClient`);
                 if (oldClient && oldClient.readyState === WebSocket.OPEN) {
                     oldClient.send(JSON.stringify({ type: 'forceLogout' }));
+                    console.log(`forceLogout`);
                 }
 
             } else {
