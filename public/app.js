@@ -104,26 +104,18 @@ ws.onmessage = (event) => {
         document.getElementById('name').style.display = 'none'; // Blende das Eingabefeld aus
         document.getElementById('register').style.display = 'none';
 
-        if (isQuizmaster) {
-            // Fragen im Frageboard anzeigen
-            const questionBoard = document.getElementById('question-board');
-            questionBoard.innerHTML = '';
-            questions.forEach((question, index) => {
-                const questionCard = document.createElement('div');
-                questionCard.className = 'question-card';
-                questionCard.innerText = question;
-                questionCard.onclick = () => {
-                    ws.send(JSON.stringify({ type: 'selectQuestion', index }));
-                    currentQuestionIndex = index; // Setze die aktuelle Frage
-                    showQuestionButtons(); // Fragebuttons anzeigen
-                };
-                questionBoard.appendChild(questionCard);
-            });
-        } else {      
-
+        if (!isQuizmaster) {          
             document.getElementById('buzzer').disabled = false; // Aktivieren des Buzzers für Teilnehmer
         }
     }
+
+    // Empfangene Fragen vom Server für den Quizmaster
+    if (data.type === 'questions' && isQuizmaster) {
+        questions = data.questions;
+        displayQuestions(); // Funktion um die Fragen im UI anzuzeigen
+    }
+
+    
 
     if (isRegistered) {
         document.getElementById('name').style.display = 'none'; // Blende das Eingabefeld aus
@@ -166,6 +158,23 @@ ws.onmessage = (event) => {
         resetParticipantsPanel(); // Reset der Teilnehmer-Panels
     }
 };
+
+// Funktion um die Fragen im UI anzuzeigen
+function displayQuestions() {
+    const questionBoard = document.getElementById('question-board');
+    questionBoard.innerHTML = ''; // Leere das Board
+    questions.forEach((question, index) => {
+        const questionCard = document.createElement('div');
+        questionCard.className = 'question-card';
+        questionCard.innerText = question;
+        questionCard.onclick = () => {
+            ws.send(JSON.stringify({ type: 'selectQuestion', index }));
+            currentQuestionIndex = index; // Setze die aktuelle Frage
+            showQuestionButtons(); // Fragebuttons anzeigen
+        };
+        questionBoard.appendChild(questionCard);
+    });
+}
 
 function resetParticipantsPanel() {
     const participants = document.querySelectorAll('.participant');
