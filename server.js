@@ -26,14 +26,16 @@ wss.on('connection', (ws) => {
         if (data.type === 'register') {
             if (!registeredNames.has(data.name)) { // Überprüfen, ob der Name bereits registriert ist
                 registeredNames.add(data.name); // Name hinzufügen
-                participants.push({ id: socketId, name: data.name });                
+                participants.push({ id: socketId, name: data.name });
+                ws.send(JSON.stringify({ type: 'registered', questions }));
                 broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
             } else {
                 ws.send(JSON.stringify({ type: 'nameTaken' })); // Rückmeldung, dass bereits registriert
             }
         }
 
-        if (data.type === 'registered') {            
+        if (data.type === 'registered') {
+            ws.send(JSON.stringify({ type: 'registered', questions }));
             console.log(`registered`);
         }
 

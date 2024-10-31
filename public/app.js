@@ -99,7 +99,6 @@ ws.onmessage = (event) => {
     }
 
     if (data.type === 'registered') {
-        questions = data.questions;
         isRegistered = true; // Setze den Status auf registriert
         document.getElementById('name').style.display = 'none'; // Blende das Eingabefeld aus
         document.getElementById('register').style.display = 'none';
