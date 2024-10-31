@@ -14,7 +14,8 @@ const registeredNames = new Set(); // Set zum Speichern der registrierten Namen
 let questions = ["Was ist die Hauptstadt von Deutschland?", "Wie viele Bundesländer hat Deutschland?", "Wer schrieb 'Faust'?"];
 
 wss.on('connection', (ws) => {
-    const socketId = uuidv4();
+    ws.id = uuidv4();
+    ws.send(JSON.stringify({ type: 'socketId', id: ws.id }));
 
     ws.on('message', (message) => {
         const data = JSON.parse(message);
@@ -22,7 +23,7 @@ wss.on('connection', (ws) => {
         if (data.type === 'register') {
             if (!registeredNames.has(data.name)) { // Überprüfen, ob der Name bereits registriert ist
                 registeredNames.add(data.name); // Name hinzufügen
-                participants.push({ id: socketId, name: data.name });
+                participants.push({ id: ws.id, name: data.name });
                 ws.send(JSON.stringify({ type: 'registered', questions }));
                 broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
             } else {
@@ -38,7 +39,7 @@ wss.on('connection', (ws) => {
         // Übernahme-Anfrage
         if (data.type === 'requestTakeOver') {
             // Nachricht an den Quizmaster zur Bestätigung der Übernahme
-            broadcast({ type: 'confirmTakeOver', name: data.name, id: socketId });
+            broadcast({ type: 'confirmTakeOver', name: data.name, id: ws.id });
         }
 
         // Quizmaster bestätigt oder lehnt die Übernahme ab

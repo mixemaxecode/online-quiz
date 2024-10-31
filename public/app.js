@@ -1,5 +1,6 @@
 //const ws = new WebSocket('wss://online-quiz-sps0.onrender.com'); // Ersetze mit deiner WebSocket-URL
 const ws = new WebSocket('ws://localhost:8080');
+let socketId = null; // Zum Speichern der `socketId`
 let questions = [];
 let currentQuestionIndex = null; // Speichert die aktuelle Frage
 let isRegistered = false;
@@ -53,6 +54,11 @@ if (isQuizmaster) {
 // WebSocket Nachrichten empfangen
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
+
+    // Erhalte und speichere die `socketId` vom Server
+    if (data.type === 'socketId') {
+        socketId = data.id;
+    }
 
     if (!isQuizmaster) {
         // Falls Name bereits vergeben
