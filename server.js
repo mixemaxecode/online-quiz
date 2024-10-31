@@ -48,7 +48,7 @@ wss.on('connection', (ws) => {
             } else {
                 broadcast({ type: 'takeOverDenied', name: data.name, id: data.id });
             }
-            broadcast({ type: 'participants', participants: participants.map(p => ({ data.name: p.name })) });
+            broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
         }
 
         if (data.type === 'selectQuestion') {
