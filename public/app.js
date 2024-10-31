@@ -3,16 +3,17 @@ const ws = new WebSocket('ws://localhost:8080');
 let questions = [];
 let currentQuestionIndex = null; // Speichert die aktuelle Frage
 let isRegistered = false;
+let attemptedName = null; // Speichert den gewünschten Namen
 
 // Funktion, um zu überprüfen, ob die Seite für den Quizmaster ist
 const isQuizmaster = window.location.pathname.includes('quizmaster');
 
 // Registrierung (Nur für Teilnehmer)
 if (!isQuizmaster) {
-    // Registrierungs-Logik bleibt für Teilnehmer erhalten
     document.getElementById('register').onclick = () => {
         const name = document.getElementById('name').value;
         if (name) {
+            attemptedName = name; // Speichere den Namen für die Übernahme
             ws.send(JSON.stringify({ type: 'register', name }));
         }
     };
@@ -53,8 +54,29 @@ if (isQuizmaster) {
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
 
-    if (data.type === 'alreadyRegistered') {
-        alert(`Der Name "${data.name}" ist bereits registriert.`);
+    if (!isQuizmaster) {
+        // Falls Name bereits vergeben
+        if (data.type === 'nameTaken') {
+            const confirmTakeOver = confirm("Name ist bereits vergeben. Möchten Sie den Namen übernehmen?");
+            if (confirmTakeOver) {
+                ws.send(JSON.stringify({ type: 'requestTakeOver', name: attemptedName }));
+            }
+        }
+
+        // Falls Übernahme bestätigt wurde
+        if (data.type === 'takeOverConfirmed') {
+            alert("Übernahme des Namens wurde vom Quizmaster bestätigt!");
+            ws.send(JSON.stringify({ type: 'register', name: attemptedName }));
+        }
+
+        if (data.type === 'takeOverDenied') {
+            alert("Übernahme des Namens wurde vom Quizmaster abgelehnt.");
+        }
+    }
+
+    if (data.type === 'confirmTakeOver' && isQuizmaster) {
+        const confirmTakeOver = confirm(`Darf Spieler "${data.name}" übernommen werden?`);
+        ws.send(JSON.stringify({ type: 'takeOverResponse', name: data.name, allow: confirmTakeOver }));
     }
 
     if (data.type === 'registered') {

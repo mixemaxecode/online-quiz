@@ -23,8 +23,28 @@ wss.on('connection', (ws) => {
                 ws.send(JSON.stringify({ type: 'registered', questions }));
                 broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
             } else {
-                ws.send(JSON.stringify({ type: 'alreadyRegistered', name: data.name })); // Rückmeldung, dass bereits registriert
+                ws.send(JSON.stringify({ type: 'nameTaken' })); // Rückmeldung, dass bereits registriert
             }
+        }
+
+        // Übernahme-Anfrage
+        if (data.type === 'requestTakeOver') {
+            // Nachricht an den Quizmaster zur Bestätigung der Übernahme
+            broadcast({ type: 'confirmTakeOver', name: data.name });
+        }
+
+        // Quizmaster bestätigt oder lehnt die Übernahme ab
+        if (data.type === 'takeOverResponse') {
+            const targetParticipant = participants.find(p => p.name === data.name);
+
+            if (data.allow) { // Falls Übernahme erlaubt
+                participants = participants.filter(p => p.name !== data.name);
+                registeredNames.delete(data.name);
+                ws.send(JSON.stringify({ type: 'takeOverConfirmed' }));
+            } else {
+                ws.send(JSON.stringify({ type: 'takeOverDenied' }));
+            }
+            broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
         }
 
         if (data.type === 'selectQuestion') {
