@@ -35,6 +35,7 @@ wss.on('connection', (ws) => {
         if (data.type === 'requestTakeOver') {
             // Nachricht an den Quizmaster zur Bestätigung der Übernahme
             broadcast({ type: 'confirmTakeOver', name: data.name });
+            console.log(`request`);
         }
 
         // Quizmaster bestätigt oder lehnt die Übernahme ab
