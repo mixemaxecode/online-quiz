@@ -38,8 +38,7 @@ wss.on('connection', (ws) => {
             const targetParticipant = participants.find(p => p.name === data.name);
 
             if (data.allow) { // Falls Übernahme erlaubt
-                participants = participants.filter(p => p.name !== data.name);
-                registeredNames.delete(data.name);
+                participants = participants.filter(p => p.name !== data.name);                
                 ws.send(JSON.stringify({ type: 'takeOverConfirmed' }));
             } else {
                 ws.send(JSON.stringify({ type: 'takeOverDenied' }));
