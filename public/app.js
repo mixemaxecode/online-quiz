@@ -73,6 +73,17 @@ ws.onmessage = (event) => {
         if (data.type === 'takeOverDenied') {
             alert("Übernahme des Namens wurde vom Quizmaster abgelehnt.");
         }
+
+        if (data.type === 'forceLogout') {
+            alert("Sie wurden abgemeldet, da ein anderer Client Ihren Namen übernommen hat.");
+            isRegistered = false;
+
+            // UI-Elemente aktualisieren, damit der Benutzer sich erneut registrieren kann
+            document.getElementById('name').style.display = 'block';
+            document.getElementById('register').style.display = 'block';
+            document.getElementById('buzzer').disabled = true;
+        }
+
     }
 
     if (data.type === 'confirmTakeOver' && isQuizmaster) {

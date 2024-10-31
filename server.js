@@ -46,8 +46,15 @@ wss.on('connection', (ws) => {
             if (data.allow) { // Falls Übernahme erlaubt                              
                 broadcast({ type: 'takeOverConfirmed', name: data.name, id: data.id });
                 const participant = participants.find(p => p.name === data.name);
+                const oldSocketId = participant.id; // Alte ID speichern
                 participant.id = data.id;
-                console.log(`confirmed particpant.id: "${data.id}"`);
+
+                // Benachrichtige den alten Client, dass er abgemeldet wird
+                const oldClient = [...wss.clients].find(client => client.id === oldSocketId);
+                if (oldClient && oldClient.readyState === WebSocket.OPEN) {
+                    oldClient.send(JSON.stringify({ type: 'forceLogout' }));
+                }
+
             } else {
                 broadcast({ type: 'takeOverDenied', name: data.name, id: data.id });
             }
