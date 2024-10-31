@@ -61,7 +61,7 @@ wss.on('connection', (ws) => {
 
         if (data.type === 'buzzer') {
             const timestamp = Date.now();
-            const participant = participants.find(p => p.id === ws);
+            const participant = participants.find(p => p.id === socketId);
             broadcast({ type: 'buzzed', name: participant.name, timestamp });
         }
 
