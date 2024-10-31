@@ -15,6 +15,7 @@ let questions = ["Was ist die Hauptstadt von Deutschland?", "Wie viele Bundeslän
 
 wss.on('connection', (ws) => {
     const socketId = uuidv4();
+    ws.id = socketId;
     ws.send(JSON.stringify({ type: 'socketId', id: socketId }));
 
     ws.on('message', (message) => {
