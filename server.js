@@ -35,20 +35,16 @@ wss.on('connection', (ws) => {
         if (data.type === 'requestTakeOver') {
             // Nachricht an den Quizmaster zur Bestätigung der Übernahme
             broadcast({ type: 'confirmTakeOver', name: data.name });
-            console.log(`request`);
         }
 
         // Quizmaster bestätigt oder lehnt die Übernahme ab
         if (data.type === 'takeOverResponse') {
-            console.log(`allow: ${data.allow}`);
             if (data.allow) { // Falls Übernahme erlaubt                              
                 ws.send(JSON.stringify({ type: 'takeOverConfirmed' }));
-                console.log(`confirmed`);
             } else {
                 ws.send(JSON.stringify({ type: 'takeOverDenied' }));
-                console.log(`not confirmed`);
             }
-            broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
+            //broadcast({ type: 'participants', participants: participants.map(p => ({ name: p.name })) });
         }
 
         if (data.type === 'selectQuestion') {
